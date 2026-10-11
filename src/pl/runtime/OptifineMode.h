@@ -23,7 +23,7 @@
  * drift out of sync field-by-field.
  *
  * **Honesty contract.** This module never claims a frame rate. It reports only what it
- * actually did ("allocator: mimalloc", "render thread: SCHED_FIFO 1") or why it did nothing
+ * actually did ("render thread: SCHED_FIFO 1") or why it did nothing
  * ("render thread: not found yet", "affinity: 2 perf cores < 4"). The launcher renders those
  * strings verbatim.
  */
@@ -31,7 +31,7 @@ namespace pl::runtime {
 
 /** Stable ids for each optimization. Persisted and shown to the user; never renumber. */
 enum class OptifineItem : int {
-  Allocator = 0,        //!< Tier 1: mimalloc interposition.
+  Allocator = 0,        //!< Tier 1: allocator interposition (removed; reported unavailable).
   RenderPriority = 1,   //!< Tier 1: render-thread SCHED_FIFO boost.
   CpuAffinity = 2,      //!< Tier 1: pin the main thread to performance cores.
   RefreshRate = 3,      //!< Tier 1: ask for the panel's native refresh rate.

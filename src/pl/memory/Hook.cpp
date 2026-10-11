@@ -148,6 +148,14 @@ int hook(FuncPtr target, FuncPtr detour, FuncPtr *original,
   return 0;
 }
 
+int hook(FuncPtr target, FuncPtr detour, FuncPtr *original) {
+  return hook(target, detour, original, HookPriority::Normal, {});
+}
+
+int hook(FuncPtr target, FuncPtr detour, FuncPtr *original, HookPriority priority) {
+  return hook(target, detour, original, priority, {});
+}
+
 bool unhook(FuncPtr target, FuncPtr detour) {
   std::lock_guard<std::mutex> lock(mtx);
   auto &map = hooks();

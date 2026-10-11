@@ -89,6 +89,24 @@
   so the aligned `operator delete` matches its `operator new`). Prefer the engine's own allocation
   via `BuildImageFrom*`; use these only when a buffer must exist before the engine call.
 
+## Allocator interposition (removed — do not reintroduce)
+- The Tier-1 "allocator" item used to define `malloc`/`free`/... and forward them to a
+  statically linked mimalloc (v2.1.7), with the switch flipped by a load-time constructor. It is
+  **removed**: `-fvisibility=hidden` meant the definitions never reached the game's allocations,
+  while the preloader's own `free`s *did* go to `mi_free`. A block from libc (e.g. `strdup` inside
+  GlossHook's xdl, freed by `xdl_close`) then faults in mimalloc. `thread_local` in `malloc` also
+  recurses under minSdk 28's emulated TLS. `OptifineAllocator.cpp` now registers the item as
+  "unavailable" so the launcher still gets a status; `mimalloc` is no longer fetched or linked.
+  If interposition is ever retried, it must guard `free`/`realloc`/`malloc_usable_size` with
+  `mi_is_in_heap_region(ptr)` and fall back to the system allocator.
+
+## Hook ABI compatibility (`pl::memory::hook`)
+- `hook` is exported as **overloads**, not one function with default arguments: a default
+  argument is resolved at the call site and emits no separate symbol, so a library built against
+  the old 4-argument signature imports `_ZN2pl6memory4hookEPvS1_PS1_NS0_12HookPriorityE` and fails
+  to load (`UnsatisfiedLinkError`) when only the 5-argument version exists. The 3- and 4-argument
+  overloads exist to keep such binaries (e.g. a prebuilt `libinbuiltmods.so`) loadable.
+
 ## Live resource-pack reload (`GameResourcePackReload`)
 - `nativeReloadResourcePacks()` / `pl::runtime::ReloadResourcePacks()` is a **fail-safe
   research seam**, not a working live reload. Reverse-engineering of

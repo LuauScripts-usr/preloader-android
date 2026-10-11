@@ -31,7 +31,7 @@ OptifineConfig gConfig{};
 std::string gAppliedBlob;
 
 constexpr const char *kItemNames[] = {
-    "mimalloc allocator", "Render thread priority", "CPU affinity pinning",
+    "Allocator interposition", "Render thread priority", "CPU affinity pinning",
     "Refresh rate unlock", "Entity culling", "Particle culling",
     "Dynamic render distance", "Callback trimming", "OreUI overlay stripping"};
 
